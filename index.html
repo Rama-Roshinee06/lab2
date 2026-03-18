@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥕🐰 Garden of Time</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #fef9ed;
+            --amber: #f59e0b;
+            --amber-dark: #d97706;
+            --orange: #ea580c;
+            --orange-light: #fed7aa;
+            --green: #16a34a;
+            --green-light: #dcfce7;
+            --blue: #0284c7;
+            --blue-light: #e0f2fe;
+            --purple: #7c3aed;
+            --purple-light: #ede9fe;
+            --pink: #ec4899;
+            --brown: #78350f;
+            --white: #ffffff;
+            --shadow: 0 8px 32px rgba(0,0,0,0.12);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-scene {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(134,239,172,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(253,186,116,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 50%, rgba(254,240,138,0.15) 0%, transparent 70%);
+        }
+
+        .floating-emoji {
+            position: fixed;
+            font-size: 2rem;
+            opacity: 0.18;
+            animation: floatAround 6s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes floatAround {
+            0%,100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-18px) rotate(5deg); }
+            66% { transform: translateY(-8px) rotate(-3deg); }
+        }
+
+        /* Layout */
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 300px;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #fffbf0 0%, #fff8e8 100%);
+            border-right: 3px solid rgba(245,158,11,0.3);
+            padding: 24px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.06);
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed rgba(245,158,11,0.4);
+        }
+        .sidebar-logo h2 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--orange);
+            line-height: 1.2;
+        }
+        .sidebar-logo p {
+            font-size: 0.75rem;
+            color: #92400e;
+            margin-top: 2px;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px;
+            border: 2px solid rgba(245,158,11,0.2);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .sidebar-card h3 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mode-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background: #fef3c7;
+            color: #92400e;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 6px;
+        }
+        .mode-btn:hover { background: #fde68a; transform: translateX(3px); }
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--amber), var(--orange));
+            color: white;
+            border-color: var(--orange);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            color: #555;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-row strong { color: #333; font-weight: 700; }
+        .badge {
+            background: linear-gradient(135deg, var(--amber), var(--orange));
+            color: white;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #555;
+            padding: 4px 0;
+        }
+        .tip-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+        .shortcut-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #666;
+            padding: 3px 0;
+        }
+        kbd {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            padding: 1px 6px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: #1e293b;
+        }
+
+        /* MAIN */
+        .main {
+            flex: 1;
+            padding: 32px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .page-title {
+            text-align: center;
+        }
+        .page-title h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--orange) 0%, var(--amber) 50%, var(--green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+        .page-title p {
+            font-size: 1.15rem;
+            color: #92400e;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        /* CHALLENGE CARD */
+        .challenge-card {
+            background: white;
+            border-radius: 28px;
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            border: 3px solid rgba(245,158,11,0.25);
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .challenge-header h2 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--orange);
+        }
+        .header-buttons { display: flex; gap: 8px; }
+        .icon-btn {
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .icon-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .btn-gray { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+        .btn-green { background: #16a34a; color: white; }
+        .btn-green:hover { background: #15803d; }
+
+        .target-display {
+            text-align: center;
+            margin-bottom: 28px;
+            padding: 16px;
+            background: linear-gradient(135deg, #fff7ed, #fef3c7);
+            border-radius: 18px;
+            border: 2px solid rgba(245,158,11,0.3);
+        }
+        .target-label { font-size: 1rem; color: #92400e; font-weight: 600; }
+        .target-time {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--orange);
+            line-height: 1.1;
+        }
+
+        /* CLOCK + DIGITAL area */
+        .clock-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 48px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        /* SVG CLOCK */
+        .clock-container {
+            position: relative;
+            filter: drop-shadow(0 12px 32px rgba(245,158,11,0.3));
+        }
+        .clock-svg {
+            cursor: pointer;
+            transition: filter 0.3s;
+        }
+        .clock-svg:hover {
+            filter: drop-shadow(0 0 12px rgba(245,158,11,0.5));
+        }
+
+        /* Hand selection glow */
+        .hand-hour { cursor: pointer; transition: all 0.3s; }
+        .hand-minute { cursor: pointer; transition: all 0.3s; }
+        .hand-selected { filter: drop-shadow(0 0 6px rgba(59,130,246,0.8)); }
+
+        /* Digital display */
+        .digital-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        .digital-clock {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 20px;
+            padding: 20px 32px;
+            border: 3px solid #475569;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.2);
+        }
+        .digital-time {
+            font-family: 'Courier New', monospace;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #34d399;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(52,211,153,0.6);
+            line-height: 1;
+        }
+        .digital-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 6px;
+            text-align: center;
+        }
+        .digital-input-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .digital-input {
+            background: white;
+            border: 3px solid var(--amber);
+            border-radius: 14px;
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            width: 160px;
+            color: #1e293b;
+            transition: all 0.2s;
+        }
+        .digital-input:focus {
+            outline: none;
+            border-color: var(--orange);
+            box-shadow: 0 0 0 4px rgba(234,88,12,0.15);
+        }
+        .digital-input-label {
+            font-size: 0.8rem;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        /* Hand select buttons */
+        .hand-selector {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .hand-btn {
+            padding: 10px 24px;
+            border-radius: 50px;
+            border: 3px solid transparent;
+            font-family: 'Baloo 2', cursive;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .hand-btn:hover { transform: translateY(-3px); }
+        .hour-btn {
+            background: #fff7ed;
+            color: var(--orange);
+            border-color: rgba(234,88,12,0.3);
+        }
+        .hour-btn.selected {
+            background: linear-gradient(135deg, var(--orange), #f97316);
+            color: white;
+            border-color: var(--orange);
+            box-shadow: 0 6px 20px rgba(234,88,12,0.35);
+        }
+        .minute-btn {
+            background: #eff6ff;
+            color: var(--blue);
+            border-color: rgba(2,132,199,0.3);
+        }
+        .minute-btn.selected {
+            background: linear-gradient(135deg, var(--blue), #0ea5e9);
+            color: white;
+            border-color: var(--blue);
+            box-shadow: 0 6px 20px rgba(2,132,199,0.35);
+        }
+
+        /* Difficulty buttons */
+        .difficulty-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 0;
+        }
+        .diff-btn {
+            padding: 10px 28px;
+            border-radius: 50px;
+            border: 3px solid transparent;
+            font-family: 'Baloo 2', cursive;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .diff-btn:hover { transform: translateY(-2px); }
+        .diff-btn.active-easy { background: linear-gradient(135deg, #16a34a, #22c55e); color: white; border-color: #16a34a; box-shadow: 0 6px 20px rgba(22,163,74,0.35); }
+        .diff-btn.active-medium { background: linear-gradient(135deg, var(--amber), #fbbf24); color: white; border-color: var(--amber); box-shadow: 0 6px 20px rgba(245,158,11,0.35); }
+        .diff-btn.active-hard { background: linear-gradient(135deg, var(--orange), var(--pink)); color: white; border-color: var(--orange); box-shadow: 0 6px 20px rgba(234,88,12,0.35); }
+
+        /* Toast / feedback */
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            z-index: 1000;
+            padding: 18px 36px;
+            border-radius: 20px;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: var(--shadow-lg);
+            min-width: 300px;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .toast.success {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: white;
+        }
+        .toast.hint {
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            color: white;
+        }
+
+        /* Score bar */
+        .score-bar {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 16px 24px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 2px solid rgba(245,158,11,0.2);
+        }
+        .score-item {
+            text-align: center;
+        }
+        .score-value {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--orange);
+            line-height: 1;
+        }
+        .score-label {
+            font-size: 0.75rem;
+            color: #92400e;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .score-divider {
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, rgba(245,158,11,0.3), transparent);
+        }
+
+        /* Instruction hint */
+        .hint-text {
+            text-align: center;
+            font-size: 0.95rem;
+            color: #92400e;
+            font-weight: 600;
+            padding: 10px;
+            background: #fff7ed;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        /* Bounce animation for score */
+        @keyframes bounce-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .bounce { animation: bounce-in 0.5s ease; }
+
+        /* Pulse on success */
+        @keyframes pulse-glow {
+            0%,100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+            50% { box-shadow: 0 0 0 20px rgba(22,163,74,0.1); }
+        }
+        .pulse-success { animation: pulse-glow 1s ease; }
+    </style>
+</head>
+<body>
+
+<div class="bg-scene"></div>
+
+<!-- Floating emojis -->
+<div class="floating-emoji" style="left:5%;top:15%;animation-delay:0s">🌸</div>
+<div class="floating-emoji" style="left:90%;top:60%;animation-delay:1.5s">🌺</div>
+<div class="floating-emoji" style="left:50%;top:85%;animation-delay:0.7s">🥕</div>
+<div class="floating-emoji" style="left:75%;top:8%;animation-delay:2s">🌻</div>
+<div class="floating-emoji" style="left:15%;top:70%;animation-delay:1s">🐰</div>
+<div class="floating-emoji" style="left:85%;top:35%;animation-delay:0.3s">🍀</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h2>🌿 Garden of Time</h2>
+            <p>Learn to tell time!</p>
+        </div>
+
+        <!-- Learning Modes -->
+        <div class="sidebar-card">
+            <h3 style="color:var(--orange)">🎯 Learning Mode</h3>
+            <button class="mode-btn active" onclick="setMode('freeplay')" id="mode-freeplay">🎮 Free Play</button>
+            <button class="mode-btn" onclick="setMode('sequencing')" id="mode-sequencing">📈 Sequencing</button>
+            <button class="mode-btn" onclick="setMode('scaffolding')" id="mode-scaffolding">🏗️ Scaffolding</button>
+            <div style="margin-top:8px;font-size:0.78rem;color:#92400e;">
+                Mode: <strong id="mode-label">freeplay</strong>
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="sidebar-card">
+            <h3 style="color:var(--blue)">📊 My Progress</h3>
+            <div class="info-row"><strong>🥕 Seeds</strong> <span class="badge" id="stat-seeds">0</span></div>
+            <div class="info-row"><strong>🌸 Flowers</strong> <span class="badge" id="stat-flowers">0</span></div>
+            <div class="info-row"><strong>✅ Correct</strong> <span class="badge" id="stat-correct">0</span></div>
+            <div class="info-row"><strong>🎯 Level</strong> <span class="badge" id="stat-level">Easy</span></div>
+        </div>
+
+        <!-- Clock Tips -->
+        <div class="sidebar-card">
+            <h3 style="color:var(--green)">🕐 Quick Tips</h3>
+            <div class="tip-item"><span class="tip-icon">🥕</span><span><strong>Short hand</strong> = Hours (fat carrot!)</span></div>
+            <div class="tip-item"><span class="tip-icon">🐰</span><span><strong>Long hand</strong> = Minutes (quick rabbit!)</span></div>
+            <div class="tip-item"><span class="tip-icon">👆</span><span>Click a hand button, then click a number!</span></div>
+            <div class="tip-item"><span class="tip-icon">⌚</span><span>Or type time in HH:MM box</span></div>
+        </div>
+
+        <!-- Keyboard Shortcuts -->
+        <div class="sidebar-card">
+            <h3 style="color:var(--purple)">⌨️ Shortcuts</h3>
+            <div class="shortcut-row"><kbd>Space</kbd> <span>New challenge</span></div>
+            <div class="shortcut-row"><kbd>H</kbd> <span>Select hour hand</span></div>
+            <div class="shortcut-row"><kbd>M</kbd> <span>Select minute hand</span></div>
+            <div class="shortcut-row"><kbd>Enter</kbd> <span>Check answer</span></div>
+            <div class="shortcut-row"><kbd>D</kbd> <span>Change difficulty</span></div>
+            <div class="shortcut-row"><kbd>S</kbd> <span>Toggle sound</span></div>
+        </div>
+
+        <!-- Sound toggle -->
+        <button onclick="toggleSound()" class="mode-btn" id="sound-btn" style="text-align:center;">🔊 Sound: On</button>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+        <div class="page-title">
+            <h1>🥕 Garden of Time 🐰</h1>
+            <p>Help the bunny read the clock and grow the garden! 🌱</p>
+        </div>
+
+        <!-- Score Bar -->
+        <div class="score-bar">
+            <div class="score-item">
+                <div class="score-value" id="score-seeds">0</div>
+                <div class="score-label">🥕 Seeds</div>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+                <div class="score-value" id="score-correct">0</div>
+                <div class="score-label">✅ Correct</div>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+                <div class="score-value" id="score-streak">0</div>
+                <div class="score-label">🔥 Streak</div>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+                <div class="score-value" id="score-flowers">0</div>
+                <div class="score-label">🌸 Flowers</div>
+            </div>
+        </div>
+
+        <!-- Challenge Card -->
+        <div class="challenge-card" id="challenge-card">
+            <div class="challenge-header">
+                <h2>Today's Garden Challenge 🎯</h2>
+                <div class="header-buttons">
+                    <button class="icon-btn btn-gray" onclick="toggleSound()" id="sound-toggle-main">🔊</button>
+                    <button class="icon-btn btn-green" onclick="generateNewChallenge()">🎲 New Challenge</button>
+                </div>
+            </div>
+
+            <!-- Target time display -->
+            <div class="target-display">
+                <div class="target-label">Show me this time on the clock:</div>
+                <div class="target-time" id="target-time">3:00</div>
+            </div>
+
+            <!-- Hand selector -->
+            <div class="hand-selector">
+                <button class="hand-btn hour-btn selected" onclick="selectHand('hour')" id="btn-hour">
+                    🥕 Hour Hand
+                </button>
+                <button class="hand-btn minute-btn" onclick="selectHand('minute')" id="btn-minute">
+                    🐰 Minute Hand
+                </button>
+            </div>
+
+            <div class="hint-text" id="hint-text">
+                👆 Click a hand, then click a number on the clock!
+            </div>
+
+            <!-- Clock + Digital area -->
+            <div class="clock-area">
+                <!-- SVG Analog Clock -->
+                <div class="clock-container">
+                    <svg class="clock-svg" id="clock-svg" width="320" height="320" viewBox="0 0 320 320">
+                        <!-- Clock face -->
+                        <defs>
+                            <radialGradient id="faceGrad" cx="40%" cy="35%" r="65%">
+                                <stop offset="0%" stop-color="#fffbeb"/>
+                                <stop offset="100%" stop-color="#fde68a"/>
+                            </radialGradient>
+                            <radialGradient id="centerGrad" cx="40%" cy="40%" r="60%">
+                                <stop offset="0%" stop-color="#475569"/>
+                                <stop offset="100%" stop-color="#1e293b"/>
+                            </radialGradient>
+                            <filter id="handShadow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.25"/>
+                            </filter>
+                        </defs>
+
+                        <!-- Outer ring -->
+                        <circle cx="160" cy="160" r="154" fill="#f59e0b" opacity="0.3"/>
+                        <circle cx="160" cy="160" r="150" fill="#d97706" opacity="0.4"/>
+                        <!-- Main face -->
+                        <circle cx="160" cy="160" r="144" fill="url(#faceGrad)" stroke="#f59e0b" stroke-width="5"/>
+
+                        <!-- Minute tick marks -->
+                        <g id="ticks"></g>
+
+                        <!-- Hour tick marks (bigger) -->
+                        <g id="hour-ticks"></g>
+
+                        <!-- Clock numbers -->
+                        <g id="clock-numbers" font-family="'Baloo 2', cursive" font-weight="700" fill="#92400e" text-anchor="middle" dominant-baseline="central"></g>
+
+                        <!-- Minute hand -->
+                        <line id="minute-hand"
+                            x1="160" y1="160"
+                            x2="160" y2="50"
+                            stroke="#0284c7"
+                            stroke-width="5"
+                            stroke-linecap="round"
+                            filter="url(#handShadow)"
+                            style="cursor:pointer;transform-origin:160px 160px"
+                        />
+
+                        <!-- Hour hand -->
+                        <line id="hour-hand"
+                            x1="160" y1="160"
+                            x2="160" y2="82"
+                            stroke="#ea580c"
+                            stroke-width="9"
+                            stroke-linecap="round"
+                            filter="url(#handShadow)"
+                            style="cursor:pointer;transform-origin:160px 160px"
+                        />
+
+                        <!-- Center dot -->
+                        <circle cx="160" cy="160" r="12" fill="url(#centerGrad)"/>
+                        <circle cx="160" cy="160" r="5" fill="#94a3b8"/>
+                    </svg>
+                </div>
+
+                <!-- Digital panel -->
+                <div class="digital-panel">
+                    <div class="digital-clock">
+                        <div class="digital-time" id="digital-display">03:00</div>
+                        <div class="digital-label">Current Time</div>
+                    </div>
+                    <div class="digital-input-wrap">
+                        <div class="digital-input-label">Type time directly (HH:MM)</div>
+                        <input type="text" class="digital-input" id="digital-input" placeholder="03:00" maxlength="5">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Difficulty selector -->
+            <div class="difficulty-row">
+                <button class="diff-btn active-easy" onclick="setDifficulty('easy')" id="diff-easy">🌱 Easy</button>
+                <button class="diff-btn" onclick="setDifficulty('medium')" id="diff-medium">🌿 Medium</button>
+                <button class="diff-btn" onclick="setDifficulty('hard')" id="diff-hard">🌳 Hard</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+// ─── STATE ─────────────────────────────────────────────────────────────────
+let currentHour = 3;
+let currentMinute = 0;
+let targetHour = 3;
+let targetMinute = 0;
+let selectedHand = 'hour';
+let soundEnabled = true;
+let seeds = 0;
+let flowers = 0;
+let correct = 0;
+let streak = 0;
+let currentDifficulty = 'easy';
+let currentMode = 'freeplay';
+let toastTimeout = null;
+
+// ─── CLOCK RENDERING ────────────────────────────────────────────────────────
+function buildClockFace() {
+    const cx = 160, cy = 160, r = 130;
+
+    // Hour ticks + numbers
+    const numbersG = document.getElementById('clock-numbers');
+    const ticksG = document.getElementById('ticks');
+    const hourTicksG = document.getElementById('hour-ticks');
+
+    // 60 minute ticks
+    for (let i = 0; i < 60; i++) {
+        const angle = (i * 6 - 90) * Math.PI / 180;
+        const isHour = i % 5 === 0;
+        const r1 = isHour ? 120 : 126;
+        const r2 = 132;
+        const x1 = cx + Math.cos(angle) * r1;
+        const y1 = cy + Math.sin(angle) * r1;
+        const x2 = cx + Math.cos(angle) * r2;
+        const y2 = cy + Math.sin(angle) * r2;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+        line.setAttribute('stroke', isHour ? '#d97706' : '#fbbf24');
+        line.setAttribute('stroke-width', isHour ? '3' : '1.5');
+        line.setAttribute('stroke-linecap', 'round');
+        ticksG.appendChild(line);
+    }
+
+    // Numbers + click areas
+    for (let n = 1; n <= 12; n++) {
+        const angle = (n * 30 - 90) * Math.PI / 180;
+        const nr = 108;
+        const x = cx + Math.cos(angle) * nr;
+        const y = cy + Math.sin(angle) * nr;
+
+        // Clickable background circle
+        const hitCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        hitCircle.setAttribute('cx', x); hitCircle.setAttribute('cy', y);
+        hitCircle.setAttribute('r', '18');
+        hitCircle.setAttribute('fill', 'transparent');
+        hitCircle.setAttribute('style', 'cursor:pointer');
+        hitCircle.setAttribute('data-hour', n);
+        hitCircle.addEventListener('click', onNumberClick);
+        hitCircle.addEventListener('mouseenter', () => {
+            txt.setAttribute('fill', '#ea580c');
+            txt.style.fontSize = '24px';
+        });
+        hitCircle.addEventListener('mouseleave', () => {
+            txt.setAttribute('fill', '#92400e');
+            txt.style.fontSize = '22px';
+        });
+
+        // Text
+        const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        txt.setAttribute('x', x); txt.setAttribute('y', y);
+        txt.setAttribute('font-size', '22');
+        txt.setAttribute('style', 'cursor:pointer;transition:all 0.2s;');
+        txt.textContent = n;
+        txt.setAttribute('data-hour', n);
+        txt.addEventListener('click', onNumberClick);
+        txt.addEventListener('mouseenter', () => {
+            txt.setAttribute('fill', '#ea580c');
+            txt.setAttribute('font-size', '24');
+        });
+        txt.addEventListener('mouseleave', () => {
+            txt.setAttribute('fill', '#92400e');
+            txt.setAttribute('font-size', '22');
+        });
+
+        numbersG.appendChild(hitCircle);
+        numbersG.appendChild(txt);
+    }
+}
+
+function onNumberClick(e) {
+    const n = parseInt(e.target.getAttribute('data-hour'));
+    if (!n) return;
+
+    if (selectedHand === 'hour') {
+        currentHour = n;
+        playSound(523, 0.1);
+        updateHint(`Great! Hour hand set to ${n}. Now try the minute hand!`);
+    } else {
+        currentMinute = (n % 12) * 5;
+        playSound(659, 0.1);
+        updateHint(`Minute hand set to ${currentMinute}. Looking good!`);
+    }
+    updateClockHands();
+    checkAnswer();
+}
+
+function updateClockHands() {
+    // Hour: 360/12 = 30 degrees per hour, +0.5 per minute
+    const hourAngle = (currentHour % 12) * 30 + currentMinute * 0.5;
+    // Minute: 360/60 = 6 degrees per minute
+    const minuteAngle = currentMinute * 6;
+
+    const hourHand = document.getElementById('hour-hand');
+    const minuteHand = document.getElementById('minute-hand');
+
+    hourHand.style.transform = `rotate(${hourAngle}deg)`;
+    minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+
+    // Update digital display
+    const h = currentHour % 12 || 12;
+    const m = currentMinute;
+    const timeStr = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+    document.getElementById('digital-display').textContent = timeStr;
+    document.getElementById('digital-input').placeholder = timeStr;
+}
+
+// ─── HAND SELECTION ──────────────────────────────────────────────────────────
+function selectHand(hand) {
+    selectedHand = hand;
+    document.getElementById('btn-hour').classList.toggle('selected', hand === 'hour');
+    document.getElementById('btn-minute').classList.toggle('selected', hand === 'minute');
+
+    const hourEl = document.getElementById('hour-hand');
+    const minEl = document.getElementById('minute-hand');
+
+    if (hand === 'hour') {
+        hourEl.setAttribute('stroke-width', '11');
+        hourEl.setAttribute('stroke', '#ea580c');
+        minEl.setAttribute('stroke-width', '5');
+        minEl.setAttribute('stroke', '#0284c7');
+        updateHint('🥕 Hour hand selected! Click a number to set the hours.');
+    } else {
+        minEl.setAttribute('stroke-width', '7');
+        minEl.setAttribute('stroke', '#0284c7');
+        hourEl.setAttribute('stroke-width', '9');
+        hourEl.setAttribute('stroke', '#ea580c');
+        updateHint('🐰 Minute hand selected! Click a number to set the minutes.');
+    }
+    playSound(440, 0.1);
+}
+
+// ─── ANSWER CHECK ────────────────────────────────────────────────────────────
+function checkAnswer() {
+    const normCurrent = ((currentHour % 12) * 60 + currentMinute);
+    const normTarget = ((targetHour % 12) * 60 + targetMinute);
+    let diff = Math.abs(normCurrent - normTarget);
+    if (diff > 360) diff = 720 - diff;
+
+    let tolerance;
+    if (currentDifficulty === 'easy') tolerance = 30;
+    else if (currentDifficulty === 'medium') tolerance = 15;
+    else tolerance = 5;
+
+    if (diff <= tolerance) {
+        onSuccess();
+    }
+}
+
+function onSuccess() {
+    seeds++;
+    correct++;
+    streak++;
+    if (streak % 5 === 0) flowers++;
+
+    updateScores();
+    playSuccess();
+
+    showToast(`🎉 Correct! +1 Seed! 🥕 Streak: ${streak}🔥`, 'success');
+    document.getElementById('challenge-card').classList.add('pulse-success');
+    setTimeout(() => {
+        document.getElementById('challenge-card').classList.remove('pulse-success');
+        generateNewChallenge();
+    }, 2000);
+}
+
+// ─── CHALLENGE GENERATION ────────────────────────────────────────────────────
+function generateNewChallenge() {
+    let h, m;
+    if (currentDifficulty === 'easy') {
+        h = Math.floor(Math.random() * 12) + 1;
+        m = 0;
+    } else if (currentDifficulty === 'medium') {
+        h = Math.floor(Math.random() * 12) + 1;
+        m = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+    } else {
+        h = Math.floor(Math.random() * 12) + 1;
+        m = Math.floor(Math.random() * 12) * 5;
+    }
+
+    targetHour = h;
+    targetMinute = m;
+
+    const display = m === 0 ? `${h} o'clock` : `${h}:${m.toString().padStart(2,'0')}`;
+    document.getElementById('target-time').textContent = display;
+
+    // Reset current time to 12:00 (don't pre-answer for them)
+    currentHour = 12;
+    currentMinute = 0;
+    updateClockHands();
+    selectHand('hour');
+    updateHint('👆 Click a hand button, then click a number on the clock!');
+}
+
+// ─── DIFFICULTY ──────────────────────────────────────────────────────────────
+function setDifficulty(d) {
+    currentDifficulty = d;
+    document.querySelectorAll('.diff-btn').forEach(b => {
+        b.className = 'diff-btn';
+    });
+    document.getElementById(`diff-${d}`).classList.add(`active-${d}`);
+    document.getElementById('stat-level').textContent = d.charAt(0).toUpperCase() + d.slice(1);
+    generateNewChallenge();
+    playSound(523, 0.15);
+}
+
+// ─── MODE ────────────────────────────────────────────────────────────────────
+function setMode(m) {
+    currentMode = m;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`mode-${m}`).classList.add('active');
+    document.getElementById('mode-label').textContent = m;
+    generateNewChallenge();
+}
+
+// ─── SCORES ──────────────────────────────────────────────────────────────────
+function updateScores() {
+    document.getElementById('score-seeds').textContent = seeds;
+    document.getElementById('score-correct').textContent = correct;
+    document.getElementById('score-streak').textContent = streak;
+    document.getElementById('score-flowers').textContent = flowers;
+    document.getElementById('stat-seeds').textContent = seeds;
+    document.getElementById('stat-flowers').textContent = flowers;
+    document.getElementById('stat-correct').textContent = correct;
+}
+
+// ─── SOUND ───────────────────────────────────────────────────────────────────
+function playSound(freq = 523, dur = 0.3) {
+    if (!soundEnabled) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.04, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + dur);
+    } catch(e) {}
+}
+
+function playSuccess() {
+    [523, 659, 784, 1047].forEach((f, i) => {
+        setTimeout(() => playSound(f, 0.3), i * 120);
+    });
+}
+
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    const label = soundEnabled ? '🔊 Sound: On' : '🔇 Sound: Off';
+    document.getElementById('sound-btn').textContent = label;
+    document.getElementById('sound-toggle-main').textContent = soundEnabled ? '🔊' : '🔇';
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => { t.className = `toast ${type}`; }, 3000);
+}
+
+// ─── HINT ────────────────────────────────────────────────────────────────────
+function updateHint(msg) {
+    document.getElementById('hint-text').textContent = msg;
+}
+
+// ─── DIGITAL INPUT ───────────────────────────────────────────────────────────
+document.getElementById('digital-input').addEventListener('input', (e) => {
+    const val = e.target.value;
+    if (val.length === 5 && val[2] === ':') {
+        const h = parseInt(val.slice(0, 2));
+        const m = parseInt(val.slice(3, 5));
+        if (!isNaN(h) && !isNaN(m) && h >= 1 && h <= 12 && m >= 0 && m <= 59) {
+            currentHour = h;
+            currentMinute = m;
+            updateClockHands();
+            checkAnswer();
+        }
+    }
+});
+document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT') return;
+    switch(e.key) {
+        case ' ': e.preventDefault(); generateNewChallenge(); break;
+        case 'h': case 'H': selectHand('hour'); break;
+        case 'm': case 'M': selectHand('minute'); break;
+        case 'Enter': checkAnswer(); break;
+        case 's': case 'S': toggleSound(); break;
+        case 'd': case 'D':
+            const ds = ['easy','medium','hard'];
+            setDifficulty(ds[(ds.indexOf(currentDifficulty)+1)%3]);
+            break;
+    }
+});
+buildClockFace();
+updateClockHands();
+generateNewChallenge();
+</script>
+</body>
+</html>
